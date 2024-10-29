@@ -31,7 +31,21 @@ class Game
         int downloads;
 };
 
+class PlayerTree
+{
+    public:
+        Player* player;
+        PlayerTree* left;
+        PlayerTree* right;
+};
 
+class GameTree
+{
+    public:
+        Game* game;
+        GameTree* left;
+        GameTree* right;
+};
 int main()
 {
 
