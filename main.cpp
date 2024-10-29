@@ -20,6 +20,18 @@ class Player
         Games_Played* gamesPlayed;
 };
 
+class Game
+{
+    public:
+        string gameID;
+        string name;
+        string developer;
+        string publisher;
+        float fileSize;
+        int downloads;
+};
+
+
 int main()
 {
 
