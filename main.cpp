@@ -9,6 +9,17 @@ class Games_Played
         int achievementsUnlocked;
 };
 
+class Player
+{
+    public:
+        string playerID;
+        string name;
+        string phone;
+        string email;
+        string password;
+        Games_Played* gamesPlayed;
+};
+
 int main()
 {
 
