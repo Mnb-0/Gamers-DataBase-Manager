@@ -1,53 +1,19 @@
 #include <iostream>
 using namespace std;
 
-class Games_Played
-{
-    public:
-        string gameID;
-        float hoursPlayed;
-        int achievementsUnlocked;
-};
+int randSeed = 232623;
 
-class Player
-{
-    public:
-        string playerID;
-        string name;
-        string phone;
-        string email;
-        string password;
-        Games_Played* gamesPlayed;
-};
+int rand() {
+    randSeed = randSeed * 1103515245 + 12345;
+    return (randSeed / 65536) % 32768;
+}
 
-class Game
+bool checkSkip(int n)
 {
-    public:
-        string gameID;
-        string name;
-        string developer;
-        string publisher;
-        float fileSize;
-        int downloads;
-};
-
-class PlayerTree
-{
-    public:
-        Player* player;
-        PlayerTree* left;
-        PlayerTree* right;
-};
-
-class GameTree
-{
-    public:
-        Game* game;
-        GameTree* left;
-        GameTree* right;
-};
-int main()
-{
-
-    return 0;
-}   
+    int num = 23*100+100;
+    if(n < num)
+    {
+        return true;
+    }
+    return false;
+}
