@@ -175,6 +175,23 @@ public:
     // Default Constructor
     PlayerTree() : root(nullptr) {}
 
+    PlayerNode* insert(PlayerNode *node, const Player &p)
+    {
+        if (node == nullptr)
+        {
+            return new PlayerNode(p);
+        }
+        if (p.playerID < node->player.playerID)
+        {
+            node->left = insert(node->left, p);
+        }
+        else if (p.playerID > node->player.playerID)
+        {
+            node->right = insert(node->right, p);
+        }
+        return node;
+    }
+
     // Destructor
     ~PlayerTree()
     {
@@ -196,3 +213,28 @@ public:
         delete root;
     }
 };
+
+//main for testing csv read functions
+int main()
+{
+    Game game = readCSVGame("Games.txt");
+    Player player = readCSVPlayer("Players.txt");
+
+    cout << "Game ID: " << game.gameID << endl;
+    cout << "Game Name: " << game.gameName << endl;
+    cout << "Developer: " << game.developer << endl;
+    cout << "Publisher: " << game.publisher << endl;
+    cout << "File Size: " << game.fileSizeGB << " GB" << endl;
+    cout << "Downloads: " << game.downloads << endl;
+
+    cout << "Player ID: " << player.playerID << endl;
+    cout << "Name: " << player.name << endl;
+    cout << "Phone Number: " << player.phoneNumber << endl;
+    cout << "Email: " << player.email << endl;
+    cout << "Password: " << player.password << endl;
+    cout << "Game ID: " << player.gamesPlayed.gameID << endl;
+    cout << "Hours Played: " << player.gamesPlayed.hoursPlayed << endl;
+    cout << "Achievements Unlocked: " << player.gamesPlayed.achievementsUnlocked << endl;
+
+    return 0;
+}
