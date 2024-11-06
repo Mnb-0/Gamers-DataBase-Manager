@@ -45,7 +45,7 @@ struct Player
     Games_Played gamesPlayed;
 
     // Default Constructor
-    Player(string playerID = "") : playerID(playerID), gamesPlayed() 
+    Player(string playerID = "") : playerID(playerID), gamesPlayed()
     {
         name = "";
         phoneNumber = "";
@@ -169,13 +169,9 @@ Player readCSVPlayer(string fileName = "Players.txt")
 
 class PlayerTree
 {
-public:
     PlayerNode *root;
 
-    // Default Constructor
-    PlayerTree() : root(nullptr) {}
-
-    PlayerNode* insert(PlayerNode *node, const Player &p)
+    PlayerNode *insert(PlayerNode *node, const Player &p)
     {
         if (node == nullptr)
         {
@@ -192,6 +188,78 @@ public:
         return node;
     }
 
+    PlayerNode *deleteNode(PlayerNode *node, const string &playerID)
+    {
+        if (node == nullptr)
+        {
+            return node;
+        }
+        if (playerID < node->player.playerID)
+        {
+            node->left = deleteNode(node->left, playerID);
+        }
+        else if (playerID > node->player.playerID)
+        {
+            node->right = deleteNode(node->right, playerID);
+        }
+        else
+        {
+            if (node->left == nullptr)
+            {
+                PlayerNode *temp = node->right;
+                delete node;
+                return temp;
+            }
+            else if (node->right == nullptr)
+            {
+                PlayerNode *temp = node->left;
+                delete node;
+                return temp;
+            }
+            PlayerNode *temp = node->right;
+            while (temp->left != nullptr)
+            {
+                temp = temp->left;
+            }
+            node->player = temp->player;
+            node->right = deleteNode(node->right, temp->player.playerID);
+        }
+        return node;
+    }
+
+    PlayerNode *search(PlayerNode *node, const string &playerID)
+    {
+        if (node == nullptr || node->player.playerID == playerID)
+        {
+            return node;
+        }
+        if (node->player.playerID < playerID)
+        {
+            return search(node->right, playerID);
+        }
+        return search(node->left, playerID);
+    }
+
+public:
+    // wrapper functions
+    void insert(const Player &p)
+    {
+        root = insert(root, p);
+    }
+
+    void deleteNode(const string &playerID)
+    {
+        root = deleteNode(root, playerID);
+    }
+
+    PlayerNode *search(const string &playerID)
+    {
+        return search(root, playerID);
+    }
+
+    // Default Constructor
+    PlayerTree() : root(nullptr) {}
+
     // Destructor
     ~PlayerTree()
     {
@@ -201,11 +269,96 @@ public:
 
 class GameTree
 {
-public:
     GameNode *root;
 
+    GameNode *insert(GameNode *node, const Game &g)
+    {
+        if (node == nullptr)
+        {
+            return new GameNode(g);
+        }
+        if (g.gameID < node->game.gameID)
+        {
+            node->left = insert(node->left, g);
+        }
+        else if (g.gameID > node->game.gameID)
+        {
+            node->right = insert(node->right, g);
+        }
+        return node;
+    }
+
+    GameNode *deleteNode(GameNode *node, const string &gameID)
+    {
+        if (node == nullptr)
+        {
+            return node;
+        }
+        if (gameID < node->game.gameID)
+        {
+            node->left = deleteNode(node->left, gameID);
+        }
+        else if (gameID > node->game.gameID)
+        {
+            node->right = deleteNode(node->right, gameID);
+        }
+        else
+        {
+            if (node->left == nullptr)
+            {
+                GameNode *temp = node->right;
+                delete node;
+                return temp;
+            }
+            else if (node->right == nullptr)
+            {
+                GameNode *temp = node->left;
+                delete node;
+                return temp;
+            }
+            GameNode *temp = node->right;
+            while (temp->left != nullptr)
+            {
+                temp = temp->left;
+            }
+            node->game = temp->game;
+            node->right = deleteNode(node->right, temp->game.gameID);
+        }
+        return node;
+    }
+
+    GameNode *search(GameNode *node, const string &gameID)
+    {
+        if (node == nullptr || node->game.gameID == gameID)
+        {
+            return node;
+        }
+        if (node->game.gameID < gameID)
+        {
+            return search(node->right, gameID);
+        }
+        return search(node->left, gameID);
+    }
+
+public:
     // Default Constructor
     GameTree() : root(nullptr) {}
+
+    // wrapper functions
+    void insert(const Game &g)
+    {
+        root = insert(root, g);
+    }
+
+    void deleteNode(const string &gameID)
+    {
+        root = deleteNode(root, gameID);
+    }
+
+    GameNode *search(const string &gameID)
+    {
+        return search(root, gameID);
+    }
 
     // Destructor
     ~GameTree()
@@ -214,7 +367,7 @@ public:
     }
 };
 
-//main for testing csv read functions
+// main for testing csv read functions
 int main()
 {
     Game game = readCSVGame("Games.txt");
