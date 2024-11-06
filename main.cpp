@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 using namespace std;
 
 int randSeed = 232623;
@@ -32,7 +33,6 @@ struct Games_Played
     // Parameterized Constructor
     Games_Played(string gameID, int achievementsUnlocked, float hoursPlayed)
         : gameID(gameID), achievementsUnlocked(achievementsUnlocked), hoursPlayed(hoursPlayed) {}
-
 };
 
 struct Player
@@ -42,26 +42,20 @@ struct Player
     string phoneNumber;
     string email;
     string password;
-    Games_Played *gamesPlayed;
+    Games_Played gamesPlayed;
 
     // Default Constructor
-    Player(string playerID = "") : playerID(playerID)
+    Player(string playerID = "") : playerID(playerID), gamesPlayed() 
     {
         name = "";
         phoneNumber = "";
         email = "";
         password = "";
-        gamesPlayed = nullptr;
     }
 
     // Parameterized Constructor
-    Player(string playerID, string name, string phoneNumber, string email, string password, Games_Played *gamesPlayed = nullptr)
+    Player(string playerID, string name, string phoneNumber, string email, string password, Games_Played gamesPlayed)
         : playerID(playerID), name(name), phoneNumber(phoneNumber), email(email), password(password), gamesPlayed(gamesPlayed) {}
-
-    // Destructor
-    ~Player() {
-        delete gamesPlayed;
-    }
 };
 
 struct PlayerNode
@@ -73,12 +67,9 @@ struct PlayerNode
     // Default Constructor
     PlayerNode(const Player &p = Player()) : player(p), left(nullptr), right(nullptr) {}
 
-    // Parameterized Constructor
-    PlayerNode(const Player &p, PlayerNode *left, PlayerNode *right)
-        : player(p), left(left), right(right) {}
-
     // Destructor
-    ~PlayerNode() {
+    ~PlayerNode()
+    {
         delete left;
         delete right;
     }
@@ -99,7 +90,6 @@ struct Game
     // Parameterized Constructor
     Game(string gameID, int downloads, float fileSizeGB, string gameName, string developer, string publisher)
         : gameID(gameID), downloads(downloads), fileSizeGB(fileSizeGB), gameName(gameName), developer(developer), publisher(publisher) {}
-
 };
 
 struct GameNode
@@ -111,16 +101,71 @@ struct GameNode
     // Default Constructor
     GameNode(const Game &g = Game()) : game(g), left(nullptr), right(nullptr) {}
 
-    // Parameterized Constructor
-    GameNode(const Game &g, GameNode *left, GameNode *right)
-        : game(g), left(left), right(right) {}
-
     // Destructor
-    ~GameNode() {
+    ~GameNode()
+    {
         delete left;
         delete right;
     }
 };
+
+Game readCSVGame(string fileName)
+{
+    Game gameTemp;
+    ifstream file(fileName);
+    if (file.is_open())
+    {
+        string line;
+        while (getline(file, line))
+        {
+            string id = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1);
+            string name = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1);
+            string developer = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1);
+            string publisher = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1);
+            string fileSize = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1);
+            string downloads = line.substr(0, line.find(","));
+            gameTemp = Game(id, stoi(downloads), stof(fileSize), name, developer, publisher);
+        }
+        file.close();
+    }
+    return gameTemp;
+}
+
+Player readCSVPlayer(string fileName = "Players.txt")
+{
+    Player playerTemp;
+    ifstream file(fileName);
+    if (file.is_open())
+    {
+        string line;
+        while (getline(file, line))
+        {
+            string id = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1);
+            string name = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1);
+            string phone = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1);
+            string email = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1);
+            string password = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1);
+            string gameID = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1);
+            string hoursPlayed = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1);
+            string achievementsUnlocked = line.substr(0, line.find(","));
+            playerTemp = Player(id, name, phone, email, password, Games_Played(gameID, stoi(achievementsUnlocked), stof(hoursPlayed)));
+        }
+        file.close();
+    }
+    return playerTemp;
+}
 
 class PlayerTree
 {
@@ -131,7 +176,8 @@ public:
     PlayerTree() : root(nullptr) {}
 
     // Destructor
-    ~PlayerTree() {
+    ~PlayerTree()
+    {
         delete root;
     }
 };
@@ -145,7 +191,8 @@ public:
     GameTree() : root(nullptr) {}
 
     // Destructor
-    ~GameTree() {
+    ~GameTree()
+    {
         delete root;
     }
 };
