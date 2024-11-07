@@ -5,7 +5,7 @@ using namespace std;
 
 int randSeed = 232623;
 
-int rand()
+int randCustom()
 {
     randSeed = randSeed * 1103515245 + 12345;
     return (randSeed / 65536) % 32768;
@@ -316,6 +316,115 @@ public:
         showTillNLayer(root, n);
     }
 
+    //show path: The DBMS should print the Preorder Traversal path taken to find an entry.
+    void showPath(PlayerNode *node, const string &playerID)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        cout << node->player.playerID << " ";
+        if (node->player.playerID == playerID)
+        {
+            return;
+        }
+        if (playerID < node->player.playerID)
+        {
+            showPath(node->left, playerID);
+        }
+        else
+        {
+            showPath(node->right, playerID);
+        }
+    }
+
+    //Edit entry: The system should allow the editing of any entry, including the primary key. After editing, the node should be repositioned in the tree if needed.
+    void editEntry(PlayerNode *node, const Player &updatedPlayer)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        if (node->player.playerID == updatedPlayer.playerID)
+        {
+            node->player = updatedPlayer;
+            return;
+        }
+        if (updatedPlayer.playerID < node->player.playerID)
+        {
+            editEntry(node->left, updatedPlayer);
+        }
+        else
+        {
+            editEntry(node->right, updatedPlayer);
+        }
+    }
+
+    //top N players: The system should find the top N players who play the most games in the dataset.
+    void topNPlayers(PlayerNode *node, int n)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        topNPlayers(node->right, n);
+        if (n > 0)
+        {
+            cout << node->player.playerID << " ";
+            n--;
+        }
+        topNPlayers(node->left, n);
+    }
+
+    //show details: The DBMS should allow the search of a player and display the details of the player, along with the details of all the games the player has played.
+    void showDetails(PlayerNode *node, const string &playerID)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        if (node->player.playerID == playerID)
+        {
+            cout << "Player ID: " << node->player.playerID << endl;
+            cout << "Name: " << node->player.name << endl;
+            cout << "Phone Number: " << node->player.phoneNumber << endl;
+            cout << "Email: " << node->player.email << endl;
+            cout << "Password: " << node->player.password << endl;
+            cout << "Game ID: " << node->player.gamesPlayed.gameID << endl;
+            cout << "Hours Played: " << node->player.gamesPlayed.hoursPlayed << endl;
+            cout << "Achievements Unlocked: " << node->player.gamesPlayed.achievementsUnlocked << endl;
+            return;
+        }
+        if (playerID < node->player.playerID)
+        {
+            showDetails(node->left, playerID);
+        }
+        else
+        {
+            showDetails(node->right, playerID);
+        }
+    }
+
+    bool searchGame(PlayerNode *node, const string &playerID, const string &gameID)
+    {
+        if (node == nullptr)
+        {
+            return false;
+        }
+        if (node->player.playerID == playerID)
+        {
+            if (node->player.gamesPlayed.gameID == gameID)
+            {
+                return true;
+            }
+            return false;
+        }
+        if (playerID < node->player.playerID)
+        {
+            return searchGame(node->left, playerID, gameID);
+        }
+        return searchGame(node->right, playerID, gameID);
+    }
 
 
     // Default Constructor
@@ -447,6 +556,151 @@ public:
         saveToCSV_G(node->left, file);
         saveToCSV_G(node->right, file);
     }
+
+    int heightTree(GameNode *node)
+    {
+        if (node == nullptr)
+        {
+            return 0;
+        }
+        int leftHeight = heightTree(node->left);
+        int rightHeight = heightTree(node->right);
+        return max(leftHeight, rightHeight) + 1;
+    }
+
+    void showTillNLayer(GameNode *node, int n, int layer = 0)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        if (layer <= n)
+        {
+            cout << node->game.gameID << " ";
+            showTillNLayer(node->left, n, layer + 1);
+            showTillNLayer(node->right, n, layer + 1);
+        }
+    }
+
+    void showTillNLayerWrapper(int n)
+    {
+        int treeHeight = heightTree(root);
+        if (n > treeHeight)
+        {
+            cout << "Layer Limit was reached. Cannot go further." << endl;
+            n = treeHeight;
+        }
+        showTillNLayer(root, n);
+    }
+
+    //show path: The DBMS should print the Preorder Traversal path taken to find an entry.
+    void showPath(GameNode *node, const string &gameID)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        cout << node->game.gameID << " ";
+        if (node->game.gameID == gameID)
+        {
+            return;
+        }
+        if (gameID < node->game.gameID)
+        {
+            showPath(node->left, gameID);
+        }
+        else
+        {
+            showPath(node->right, gameID);
+        }
+    }
+
+    //Edit entry: The system should allow the editing of any entry, including the primary key. After editing, the node should be repositioned in the tree if needed.
+    void editEntry(GameNode *node, const Game &updatedGame)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        if (node->game.gameID == updatedGame.gameID)
+        {
+            node->game = updatedGame;
+            return;
+        }
+        if (updatedGame.gameID < node->game.gameID)
+        {
+            editEntry(node->left, updatedGame);
+        }
+        else
+        {
+            editEntry(node->right, updatedGame);
+        }
+    }
+
+    //top N
+    void topNPlayers(GameNode *node, int n)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        topNPlayers(node->right, n);
+        if (n > 0)
+        {
+            cout << node->game.gameID << " ";
+            n--;
+        }
+        topNPlayers(node->left, n);
+    }
+
+    //show details: The DBMS should allow the search of a player and display the details of the player, along with the details of all the games the player has played.
+    void showDetails(GameNode *node, const string &gameID)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        if (node->game.gameID == gameID)
+        {
+            cout << "Game ID: " << node->game.gameID << endl;
+            cout << "Game Name: " << node->game.gameName << endl;
+            cout << "Developer: " << node->game.developer << endl;
+            cout << "Publisher: " << node->game.publisher << endl;
+            cout << "File Size: " << node->game.fileSizeGB << " GB" << endl;
+            cout << "Downloads: " << node->game.downloads << endl;
+            return;
+        }
+        if (gameID < node->game.gameID)
+        {
+            showDetails(node->left, gameID);
+        }
+        else
+        {
+            showDetails(node->right, gameID);
+        }
+    }
+
+    bool searchPlayer(GameNode *node, const string &gameID, const string &playerID)
+    {
+        if (node == nullptr)
+        {
+            return false;
+        }
+        if (node->game.gameID == gameID)
+        {
+            if (node->game.gameID == playerID)
+            {
+                return true;
+            }
+            return false;
+        }
+        if (gameID < node->game.gameID)
+        {
+            return searchPlayer(node->left, gameID, playerID);
+        }
+        return searchPlayer(node->right, gameID, playerID);
+    }
+
 
     // Destructor
     ~GameTree()
