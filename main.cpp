@@ -280,19 +280,40 @@ public:
         saveToCSV_P(node->right, file);
     }
 
-    void showNLayer(PlayerNode *node, int n, int layer = 0)
+    int heightTree(PlayerNode *node)
+    {
+        if (node == nullptr)
+        {
+            return 0;
+        }
+        int leftHeight = heightTree(node->left);
+        int rightHeight = heightTree(node->right);
+        return max(leftHeight, rightHeight) + 1;
+    }
+
+    void showTillNLayer(PlayerNode *node, int n, int layer = 0)
     {
         if (node == nullptr)
         {
             return;
         }
-        if (layer == n)
+        if (layer <= n)
         {
             cout << node->player.playerID << " ";
-            return;
+            showTillNLayer(node->left, n, layer + 1);
+            showTillNLayer(node->right, n, layer + 1);
         }
-        showNLayer(node->left, n, layer + 1);
-        showNLayer(node->right, n, layer + 1);
+    }
+
+    void showTillNLayerWrapper(int n)
+    {
+        int treeHeight = heightTree(root);
+        if (n > treeHeight)
+        {
+            cout << "Layer Limit was reached. Cannot go further." << endl;
+            n = treeHeight;
+        }
+        showTillNLayer(root, n);
     }
 
 
