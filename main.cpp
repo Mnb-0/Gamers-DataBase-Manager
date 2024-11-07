@@ -257,6 +257,46 @@ public:
         return search(root, playerID);
     }
 
+    PlayerNode *preorderTraversal(PlayerNode *node)
+    {
+        if (node == nullptr)
+        {
+            return node;
+        }
+        cout << node->player.playerID << " ";
+        preorderTraversal(node->left);
+        preorderTraversal(node->right);
+        return node;
+    }
+
+    void saveToCSV_P(PlayerNode *node, ofstream &file)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        file << node->player.playerID << "," << node->player.name << "," << node->player.phoneNumber << "," << node->player.email << "," << node->player.password << "," << node->player.gamesPlayed.gameID << "," << node->player.gamesPlayed.hoursPlayed << "," << node->player.gamesPlayed.achievementsUnlocked << endl;
+        saveToCSV_P(node->left, file);
+        saveToCSV_P(node->right, file);
+    }
+
+    void showNLayer(PlayerNode *node, int n, int layer = 0)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        if (layer == n)
+        {
+            cout << node->player.playerID << " ";
+            return;
+        }
+        showNLayer(node->left, n, layer + 1);
+        showNLayer(node->right, n, layer + 1);
+    }
+
+
+
     // Default Constructor
     PlayerTree() : root(nullptr) {}
 
@@ -284,6 +324,10 @@ class GameTree
         else if (g.gameID > node->game.gameID)
         {
             node->right = insert(node->right, g);
+        }
+        else
+        {
+            cout << "Primary Game ID already exists" << endl;
         }
         return node;
     }
@@ -358,6 +402,29 @@ public:
     GameNode *search(const string &gameID)
     {
         return search(root, gameID);
+    }
+
+    GameNode *preorderTraversal(GameNode *node)
+    {
+        if (node == nullptr)
+        {
+            return node;
+        }
+        cout << node->game.gameID << " ";
+        preorderTraversal(node->left);
+        preorderTraversal(node->right);
+        return node;
+    }
+
+    void saveToCSV_G(GameNode *node, ofstream &file)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        file << node->game.gameID << "," << node->game.downloads << "," << node->game.fileSizeGB << "," << node->game.gameName << "," << node->game.developer << "," << node->game.publisher << endl;
+        saveToCSV_G(node->left, file);
+        saveToCSV_G(node->right, file);
     }
 
     // Destructor
