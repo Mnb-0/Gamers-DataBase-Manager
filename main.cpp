@@ -1,14 +1,16 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 int randSeed = 232623;
 
 int randCustom()
 {
-    randSeed = randSeed * 1103515245 + 12345;
-    return (randSeed / 65536) % 32768;
+    int random = rand() % 1001;
+    return random;
 }
 
 bool checkSkip(int n)
@@ -27,10 +29,10 @@ struct Games_Played
     float hoursPlayed;
     string gameID;
 
-    // Default Constructor
+    // default constructor
     Games_Played(string gameID = "") : gameID(gameID), achievementsUnlocked(0), hoursPlayed(0) {}
 
-    // Parameterized Constructor
+    // parameterized constructor
     Games_Played(string gameID, int achievementsUnlocked, float hoursPlayed)
         : gameID(gameID), achievementsUnlocked(achievementsUnlocked), hoursPlayed(hoursPlayed) {}
 };
@@ -44,7 +46,7 @@ struct Player
     string password;
     Games_Played gamesPlayed;
 
-    // Default Constructor
+    // default constructor
     Player(string playerID = "") : playerID(playerID), gamesPlayed()
     {
         name = "";
@@ -53,7 +55,7 @@ struct Player
         password = "";
     }
 
-    // Parameterized Constructor
+    // parameterized constructor
     Player(string playerID, string name, string phoneNumber, string email, string password, Games_Played gamesPlayed)
         : playerID(playerID), name(name), phoneNumber(phoneNumber), email(email), password(password), gamesPlayed(gamesPlayed) {}
 };
@@ -64,10 +66,10 @@ struct PlayerNode
     PlayerNode *left;
     PlayerNode *right;
 
-    // Default Constructor
+    // default constructor
     PlayerNode(const Player &p = Player()) : player(p), left(nullptr), right(nullptr) {}
 
-    // Destructor
+    // destructor
     ~PlayerNode()
     {
         delete left;
@@ -84,10 +86,10 @@ struct Game
     string developer;
     string publisher;
 
-    // Default Constructor
+    // default constructor
     Game(string gameID = "") : gameID(gameID), downloads(0), fileSizeGB(0.0), gameName(""), developer(""), publisher("") {}
 
-    // Parameterized Constructor
+    // parameterized constructor
     Game(string gameID, int downloads, float fileSizeGB, string gameName, string developer, string publisher)
         : gameID(gameID), downloads(downloads), fileSizeGB(fileSizeGB), gameName(gameName), developer(developer), publisher(publisher) {}
 };
@@ -98,74 +100,16 @@ struct GameNode
     GameNode *left;
     GameNode *right;
 
-    // Default Constructor
+    // default constructor
     GameNode(const Game &g = Game()) : game(g), left(nullptr), right(nullptr) {}
 
-    // Destructor
+    // destructor
     ~GameNode()
     {
         delete left;
         delete right;
     }
 };
-
-Game readCSVGame(string fileName)
-{
-    Game gameTemp;
-    ifstream file(fileName);
-    if (file.is_open())
-    {
-        string line;
-        while (getline(file, line))
-        {
-            string id = line.substr(0, line.find(","));
-            line = line.substr(line.find(",") + 1);
-            string name = line.substr(0, line.find(","));
-            line = line.substr(line.find(",") + 1);
-            string developer = line.substr(0, line.find(","));
-            line = line.substr(line.find(",") + 1);
-            string publisher = line.substr(0, line.find(","));
-            line = line.substr(line.find(",") + 1);
-            string fileSize = line.substr(0, line.find(","));
-            line = line.substr(line.find(",") + 1);
-            string downloads = line.substr(0, line.find(","));
-            gameTemp = Game(id, stoi(downloads), stof(fileSize), name, developer, publisher);
-        }
-        file.close();
-    }
-    return gameTemp;
-}
-
-Player readCSVPlayer(string fileName = "Players.txt")
-{
-    Player playerTemp;
-    ifstream file(fileName);
-    if (file.is_open())
-    {
-        string line;
-        while (getline(file, line))
-        {
-            string id = line.substr(0, line.find(","));
-            line = line.substr(line.find(",") + 1);
-            string name = line.substr(0, line.find(","));
-            line = line.substr(line.find(",") + 1);
-            string phone = line.substr(0, line.find(","));
-            line = line.substr(line.find(",") + 1);
-            string email = line.substr(0, line.find(","));
-            line = line.substr(line.find(",") + 1);
-            string password = line.substr(0, line.find(","));
-            line = line.substr(line.find(",") + 1);
-            string gameID = line.substr(0, line.find(","));
-            line = line.substr(line.find(",") + 1);
-            string hoursPlayed = line.substr(0, line.find(","));
-            line = line.substr(line.find(",") + 1);
-            string achievementsUnlocked = line.substr(0, line.find(","));
-            playerTemp = Player(id, name, phone, email, password, Games_Played(gameID, stoi(achievementsUnlocked), stof(hoursPlayed)));
-        }
-        file.close();
-    }
-    return playerTemp;
-}
 
 class PlayerTree
 {
@@ -247,6 +191,40 @@ public:
         root = insert(root, p);
     }
 
+    // read given csv file and create tree
+    PlayerTree readCSVPlayer(string fileName = "Players.txt")
+    {
+        Player playerTemp;
+        PlayerTree playerTree;
+        ifstream file(fileName);
+        if (file.is_open())
+        {
+            string line;
+            while (getline(file, line))
+            {
+                string id = line.substr(0, line.find(","));
+                line = line.substr(line.find(",") + 1);
+                string name = line.substr(0, line.find(","));
+                line = line.substr(line.find(",") + 1);
+                string phone = line.substr(0, line.find(","));
+                line = line.substr(line.find(",") + 1);
+                string email = line.substr(0, line.find(","));
+                line = line.substr(line.find(",") + 1);
+                string password = line.substr(0, line.find(","));
+                line = line.substr(line.find(",") + 1);
+                string gameID = line.substr(0, line.find(","));
+                line = line.substr(line.find(",") + 1);
+                string hoursPlayed = line.substr(0, line.find(","));
+                line = line.substr(line.find(",") + 1);
+                string achievementsUnlocked = line.substr(0, line.find(","));
+                playerTemp = Player(id, name, phone, email, password, Games_Played(gameID, stoi(achievementsUnlocked), stof(hoursPlayed)));
+                playerTree.insert(playerTemp);
+            }
+            file.close();
+        }
+        return playerTree;
+    }
+
     void deleteNode(const string &playerID)
     {
         root = deleteNode(root, playerID);
@@ -316,7 +294,7 @@ public:
         showTillNLayer(root, n);
     }
 
-    //show path: The DBMS should print the Preorder Traversal path taken to find an entry.
+    // show path: The DBMS should print the Preorder Traversal path taken to find an entry.
     void showPath(PlayerNode *node, const string &playerID)
     {
         if (node == nullptr)
@@ -338,7 +316,7 @@ public:
         }
     }
 
-    //Edit entry: The system should allow the editing of any entry, including the primary key. After editing, the node should be repositioned in the tree if needed.
+    // Edit entry: The system should allow the editing of any entry, including the primary key. After editing, the node should be repositioned in the tree if needed.
     void editEntry(PlayerNode *node, const Player &updatedPlayer)
     {
         if (node == nullptr)
@@ -360,7 +338,7 @@ public:
         }
     }
 
-    //top N players: The system should find the top N players who play the most games in the dataset.
+    // top N players: The system should find the top N players who play the most games in the dataset.
     void topNPlayers(PlayerNode *node, int n)
     {
         if (node == nullptr)
@@ -376,7 +354,7 @@ public:
         topNPlayers(node->left, n);
     }
 
-    //show details: The DBMS should allow the search of a player and display the details of the player, along with the details of all the games the player has played.
+    // show details: The DBMS should allow the search of a player and display the details of the player, along with the details of all the games the player has played.
     void showDetails(PlayerNode *node, const string &playerID)
     {
         if (node == nullptr)
@@ -426,9 +404,13 @@ public:
         return searchGame(node->right, playerID, gameID);
     }
 
-
     // Default Constructor
     PlayerTree() : root(nullptr) {}
+
+    PlayerNode *getRoot()
+    {
+        return root;
+    }
 
     // Destructor
     ~PlayerTree()
@@ -518,6 +500,11 @@ public:
     // Default Constructor
     GameTree() : root(nullptr) {}
 
+    GameNode *getRoot()
+    {
+        return root;
+    }
+
     // wrapper functions
     void insert(const Game &g)
     {
@@ -593,7 +580,7 @@ public:
         showTillNLayer(root, n);
     }
 
-    //show path: The DBMS should print the Preorder Traversal path taken to find an entry.
+    // show path: The DBMS should print the Preorder Traversal path taken to find an entry.
     void showPath(GameNode *node, const string &gameID)
     {
         if (node == nullptr)
@@ -615,7 +602,7 @@ public:
         }
     }
 
-    //Edit entry: The system should allow the editing of any entry, including the primary key. After editing, the node should be repositioned in the tree if needed.
+    // Edit entry: The system should allow the editing of any entry, including the primary key. After editing, the node should be repositioned in the tree if needed.
     void editEntry(GameNode *node, const Game &updatedGame)
     {
         if (node == nullptr)
@@ -637,7 +624,7 @@ public:
         }
     }
 
-    //top N
+    // top N
     void topNPlayers(GameNode *node, int n)
     {
         if (node == nullptr)
@@ -653,7 +640,7 @@ public:
         topNPlayers(node->left, n);
     }
 
-    //show details: The DBMS should allow the search of a player and display the details of the player, along with the details of all the games the player has played.
+    // show details: The DBMS should allow the search of a player and display the details of the player, along with the details of all the games the player has played.
     void showDetails(GameNode *node, const string &gameID)
     {
         if (node == nullptr)
@@ -680,6 +667,7 @@ public:
         }
     }
 
+    // search for player in tree
     bool searchPlayer(GameNode *node, const string &gameID, const string &playerID)
     {
         if (node == nullptr)
@@ -701,8 +689,37 @@ public:
         return searchPlayer(node->right, gameID, playerID);
     }
 
+    // read given csv file and create tree
+    GameTree readCSVGame(string fileName)
+    {
+        Game gameTemp;
+        GameTree gameTree;
+        ifstream file(fileName);
+        if (file.is_open())
+        {
+            string line;
+            while (getline(file, line))
+            {
+                string id = line.substr(0, line.find(","));
+                line = line.substr(line.find(",") + 1);
+                string name = line.substr(0, line.find(","));
+                line = line.substr(line.find(",") + 1);
+                string developer = line.substr(0, line.find(","));
+                line = line.substr(line.find(",") + 1);
+                string publisher = line.substr(0, line.find(","));
+                line = line.substr(line.find(",") + 1);
+                string fileSize = line.substr(0, line.find(","));
+                line = line.substr(line.find(",") + 1);
+                string downloads = line.substr(0, line.find(","));
+                gameTemp = Game(id, stoi(downloads), stof(fileSize), name, developer, publisher);
+                gameTree.insert(gameTemp);
+            }
+            file.close();
+        }
+        return gameTree;
+    }
 
-    // Destructor
+    // destructor
     ~GameTree()
     {
         delete root;
@@ -712,24 +729,27 @@ public:
 // main for testing csv read functions
 int main()
 {
-    Game game = readCSVGame("Games.txt");
-    Player player = readCSVPlayer("Players.txt");
 
-    cout << "Game ID: " << game.gameID << endl;
-    cout << "Game Name: " << game.gameName << endl;
-    cout << "Developer: " << game.developer << endl;
-    cout << "Publisher: " << game.publisher << endl;
-    cout << "File Size: " << game.fileSizeGB << " GB" << endl;
-    cout << "Downloads: " << game.downloads << endl;
+    PlayerTree playerTree;
+    GameTree gameTree;
 
-    cout << "Player ID: " << player.playerID << endl;
-    cout << "Name: " << player.name << endl;
-    cout << "Phone Number: " << player.phoneNumber << endl;
-    cout << "Email: " << player.email << endl;
-    cout << "Password: " << player.password << endl;
-    cout << "Game ID: " << player.gamesPlayed.gameID << endl;
-    cout << "Hours Played: " << player.gamesPlayed.hoursPlayed << endl;
-    cout << "Achievements Unlocked: " << player.gamesPlayed.achievementsUnlocked << endl;
+    // read data from CSV files into the trees
+    playerTree = playerTree.readCSVPlayer("Players.txt");
+    gameTree = gameTree.readCSVGame("Games.txt");
+
+    cout << "Player Tree Preorder Traversal:" << endl;
+    playerTree.preorderTraversal(playerTree.getRoot());
+
+    cout << "Game Tree Preorder Traversal:" << endl;
+    gameTree.preorderTraversal(gameTree.getRoot());
+
+    string playerID = "player123";
+    cout << "Details of Player " << playerID << ":" << endl;
+    playerTree.showDetails(playerTree.search(playerID), playerID);
+
+    string gameID = "game456";
+    cout << "Details of Game " << gameID << ":" << endl;
+    gameTree.showDetails(gameTree.search(gameID), gameID);
 
     return 0;
 }
