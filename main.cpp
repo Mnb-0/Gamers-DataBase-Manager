@@ -743,11 +743,11 @@ int main()
     cout << "Game Tree Preorder Traversal:" << endl;
     gameTree.preorderTraversal(gameTree.getRoot());
 
-    string playerID = "player123";
+    string playerID = "12323424234";
     cout << "Details of Player " << playerID << ":" << endl;
     playerTree.showDetails(playerTree.search(playerID), playerID);
 
-    string gameID = "game456";
+    string gameID = "45453456";
     cout << "Details of Game " << gameID << ":" << endl;
     gameTree.showDetails(gameTree.search(gameID), gameID);
 
