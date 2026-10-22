@@ -1,6 +1,3 @@
-
----
-
 # Game and Player Management System
 
 ## Overview
